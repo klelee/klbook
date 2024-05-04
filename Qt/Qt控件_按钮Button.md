@@ -87,87 +87,108 @@ QRadioButton: 选择按钮，继承 QAbstractButton 类。 RadioButton 单选按
 
 示例：
 
-头文件： `qbuttondemo.h`
+头文件： `qradiobutton_demo.h`
 
 ```cpp
-#ifndef QBUTTONDEMO_H
-#define QBUTTONDEMO_H
+#ifndef QRADIOBUTTON_DEMO_H
+#define QRADIOBUTTON_DEMO_H
 
 #include <QMainWindow>
-#include <QPushButton>
-#include <QToolBar>
-#include <QToolButton>
+#include <QLabel>
 #include <QRadioButton>
+#include <QButtonGroup>
 
-class QButtonDemo : public QMainWindow
+class QRadioButton_demo : public QMainWindow
 {
     Q_OBJECT
 
 public:
-    QButtonDemo(QWidget *parent = nullptr);
-    ~QButtonDemo();
+    QRadioButton_demo(QWidget *parent = nullptr);
+    ~QRadioButton_demo();
 
 private:
-    QPushButton * mPushButton;
-    QToolBar * mToolBar;
-    QToolButton * mToolButton;
+    QLabel * message;
+    QButtonGroup * mRadioGroup_demo;
     QRadioButton * mRadioButton_a;
     QRadioButton * mRadioButton_b;
+
+public slots:
+    void display_message();
 };
-#endif // QBUTTONDEMO_H
+#endif // QRADIOBUTTON_DEMO_H
 
 ```
 
+qradiobutton通常和ButtonGroup搭配使用。在头文件中声明了一个ButtonGroup 和 两个RadioButton。并且声明了一个槽函数，用于处理这两个单选所触发的事件。
 
 
 
-
-源文件： `qbuttondemo.cpp`
+源文件： `qradiobutton_demo.cpp`
 
 ```cpp
-#include "qbuttondemo.h"
+#include "qradiobutton_demo.h"
 
-QButtonDemo::QButtonDemo(QWidget *parent)
+QRadioButton_demo::QRadioButton_demo(QWidget *parent)
     : QMainWindow(parent)
 {
-    this->setGeometry(0, 0, 1280, 800);
+    this->setGeometry(400, 400, 600, 400);
     this->setWindowTitle("QButtonDemo");
 
-    mPushButton = new QPushButton(this);
-    mPushButton->setGeometry(580, 350, 120, 60);
-    mPushButton->setText("Exit");
+    message = new QLabel(this);
 
-    mToolBar = new QToolBar(this);
-    mToolBar->setGeometry(0, 0, 1280, 40);
-    mToolButton = new QToolButton(mToolBar);
-    mToolButton->setGeometry(0, 0, 60, 40);
-    mToolButton->setText("Help");
+    mRadioGroup_demo = new QButtonGroup(this);
 
     mRadioButton_a = new QRadioButton(this);
     mRadioButton_b = new QRadioButton(this);
-    mRadioButton_a->setGeometry(0, 100, 120, 60);
-    mRadioButton_b->setGeometry(120, 100, 120, 60);
+    mRadioButton_a->setGeometry(60, 100, 60, 40);
+    mRadioButton_b->setGeometry(120, 100, 60, 40);
     mRadioButton_a->setText("a");
     mRadioButton_b->setText("b");
+
+    mRadioGroup_demo->addButton(mRadioButton_a, 0);
+    mRadioGroup_demo->addButton(mRadioButton_b, 1);
+
+    mRadioButton_a->setChecked(true);
+
+    connect(mRadioButton_a, SIGNAL(clicked()), this, SLOT(display_message()));
+    connect(mRadioButton_b, SIGNAL(clicked()), this, SLOT(display_message()));
+
 }
 
-QButtonDemo::~QButtonDemo() {}
+QRadioButton_demo::~QRadioButton_demo() {}
+
+void QRadioButton_demo::display_message()
+{
+    int id = mRadioGroup_demo->checkedId();
+    switch (id) {
+    case 0:
+        message->setText("message id 0");
+        break;
+    case 1:
+        message->setText("message id 1");
+        break;
+    default:
+        break;
+    }
+}
 
 ```
+
+在源文件中实例化了ButtonGroup和两个RadioButton按钮。并将两个单选按钮放在了按钮组里面，设置id为0，1. 并且实现单选对应的槽函数。当选择a的时候打印`message id 0` ， 选择b的时候打印`message id 1`
 
 
 
 主文件： `main.cpp`
 
 ```cpp
-#include "qbuttondemo.h"
+#include "qradiobutton_demo.h"
 
 #include <QApplication>
 
 int main(int argc, char *argv[])
 {
     QApplication a(argc, argv);
-    QButtonDemo w;
+    QRadioButton_demo w;
     w.show();
     return a.exec();
 }
@@ -176,7 +197,11 @@ int main(int argc, char *argv[])
 
 执行应用程序。
 
-![image-20240504154208402](https://klelee-images.oss-cn-qingdao.aliyuncs.com/typora/image-20240504154208402.png)
+![image-20240504205212735](https://klelee-images.oss-cn-qingdao.aliyuncs.com/typora/image-20240504205212735.png)
+
+
+
+![image-20240504205225333](https://klelee-images.oss-cn-qingdao.aliyuncs.com/typora/image-20240504205225333.png)
 
 
 
